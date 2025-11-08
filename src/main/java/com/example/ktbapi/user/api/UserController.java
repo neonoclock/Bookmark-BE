@@ -71,4 +71,15 @@ public class UserController {
 
         return ApiResponse.success();
     }
+
+    @DeleteMapping("/{userId}")
+    public ApiResponse<Void> deleteUser(@PathVariable Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        userRepo.delete(user);
+
+        return ApiResponse.success();
+    }
+
 }
