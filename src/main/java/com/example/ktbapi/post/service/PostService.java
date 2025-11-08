@@ -4,7 +4,6 @@ import com.example.ktbapi.common.dto.IdResponse;
 import com.example.ktbapi.common.paging.PagedResponse;
 import com.example.ktbapi.post.api.PostSortKey;
 import com.example.ktbapi.post.dto.*;
-import com.example.ktbapi.post.model.Post;
 
 import java.util.List;
 
@@ -19,8 +18,8 @@ public interface PostService {
     void like(Long userId, Long postId);
     void unlike(Long userId, Long postId);
 
-    List<Post> findAllPosts_NPlusOne();
-    List<Post> findAllPosts_EntityGraph();
+    List<PostSummaryResponse> getAllPosts_NPlusOne();
+    List<PostSummaryResponse> getAllPosts_EntityGraph();
 
     long resetViews(int threshold);
 }

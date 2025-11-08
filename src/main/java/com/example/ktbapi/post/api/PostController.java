@@ -7,6 +7,8 @@ import com.example.ktbapi.post.dto.*;
 import com.example.ktbapi.post.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostController {
@@ -59,4 +61,15 @@ public class PostController {
         service.deletePost(userId, postId);
         return ApiResponse.success();
     }
+
+    @GetMapping("/nplus-one")
+    public ApiResponse<List<PostSummaryResponse>> allWithNPlusOne() {
+        return ApiResponse.success(service.getAllPosts_NPlusOne());
+    }
+
+    @GetMapping("/entity-graph")
+    public ApiResponse<List<PostSummaryResponse>> allWithEntityGraph() {
+        return ApiResponse.success(service.getAllPosts_EntityGraph());
+    }
 }
+

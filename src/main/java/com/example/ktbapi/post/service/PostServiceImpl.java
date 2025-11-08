@@ -166,13 +166,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAllPosts_NPlusOne() {
-        return postRepo.findAll();
+    public List<PostSummaryResponse> getAllPosts_NPlusOne() {
+        return postRepo.findAll()
+                .stream()
+                .map(PostMapper::toSummary)
+                .toList();
     }
 
     @Override
-    public List<Post> findAllPosts_EntityGraph() {
-        return postRepo.findAllByOrderByCreatedAtDesc();
+    public List<PostSummaryResponse> getAllPosts_EntityGraph() {
+        return postRepo.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(PostMapper::toSummary)
+                .toList();
     }
 
     @Override
