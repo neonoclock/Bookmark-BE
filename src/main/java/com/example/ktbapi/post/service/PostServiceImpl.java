@@ -76,7 +76,6 @@ public class PostServiceImpl implements PostService {
 
         Pageable pageable = PageRequest.of(page, limit, toSort(sort));
 
-        // ✅ PostSearchCond 객체로 조건 구성
         PostSearchCond cond = new PostSearchCond();
         cond.keyword = keyword;
         cond.authorId = authorId;
@@ -85,7 +84,6 @@ public class PostServiceImpl implements PostService {
         cond.sort = sort;
 
         Page<Post> result = postRepo.search(cond, pageable);
-
         var items = result.getContent().stream()
                 .map(PostMapper::toSummary)
                 .toList();

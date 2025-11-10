@@ -1,7 +1,6 @@
 package com.example.ktbapi.post.dto;
 
 import com.example.ktbapi.post.api.PostSortKey;
-
 import java.time.LocalDateTime;
 
 public class PostSearchCond {
