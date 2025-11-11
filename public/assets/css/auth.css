@@ -1,0 +1,149 @@
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, -apple-system, "Apple SD Gothic Neo", Roboto, "Noto Sans KR", Arial, "맑은 고딕", "Malgun Gothic", system-ui, sans-serif;
+  background: #f2f3f6;
+  color: #111;
+}
+
+/* 테마 변수 */
+:root{
+  --brand:#111;
+  --border:#d9dbe0;
+  --muted:#6b7280;
+  --error:#e11d48;
+  --primary:#bba7ff;
+  --primary-press:#a896ff;
+  --radius:12px;
+  --input-h:38px;
+  --w-field:360px;
+}
+
+/* 상단 헤더 라인 */
+.site-header{
+  width:100%;
+  border-bottom:1px solid #cfd2d9;
+  background: transparent;
+}
+.site-header .brand{
+  margin:16px auto;
+  text-align:center;
+  font-size:28px;
+  font-weight:700;
+  color: var(--brand);
+}
+
+/* 레이아웃: 화면 중앙 정렬 */
+.auth-layout{
+  min-height: calc(100vh - 58px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 40px 16px;
+}
+
+/* 카드 컨테이너 */
+.auth-card{
+  width: 560px;
+  text-align:center;
+}
+
+/* 제목 */
+.auth-title{
+  margin: 0 0 36px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+/* 폼 */
+.auth-form{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 14px;
+}
+
+/* 각 필드 */
+.form-field{
+  width: var(--w-field);
+  text-align:left;
+}
+.form-field label{
+  display:block;
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.form-field input{
+  width:100%;
+  height: var(--input-h);
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:#fff;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  font-size: 14px;
+}
+.form-field input::placeholder{ color:#9aa1ac; }
+.form-field input:focus{
+  border-color:#a296ff;
+  box-shadow: 0 0 0 3px rgba(162,150,255,.15);
+}
+
+/* 헬퍼 텍스트 */
+.helper{
+  margin:6px 0 0;
+  font-size:12px;
+  line-height:1.4;
+  color: var(--muted);
+}
+.helper.error{ color: var(--error); }
+.helper .star{ color: var(--error); margin-right: 4px; }
+
+/* 버튼들 */
+.btn{
+  width: var(--w-field);
+  height: 42px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor:pointer;
+}
+.btn.primary{
+  background: var(--primary);
+  color: #fff;
+}
+.btn.primary:active{
+  background: var(--primary-press);
+}
+.btn.primary:active{ background: var(--primary-press); }
+
+/* 텍스트 버튼(회원가입) */
+.link-btn{
+  background: transparent;
+  color:#333;
+  width: auto;
+  height:auto;
+  padding:10px 0;
+  border:0;
+  cursor:pointer;
+  font-size:13px;
+  text-decoration:none;
+}
+
+@media (min-height: 900px){
+  .auth-card{ transform: translateY(-40px); }
+}
+
+/* 다크모드 대비 */
+@media (prefers-color-scheme: dark){
+  body{ background:#0f1115; color:#e5e7eb; }
+  .site-header{ border-bottom-color:#232633; }
+  .form-field input{ background:#111318; border-color:#2a2f3b; color:#e5e7eb; }
+  .form-field input:focus{ border-color:#8f7bff; box-shadow: 0 0 0 3px rgba(143,123,255,.18); }
+  .btn.primary{ color:#101014; }
+}
