@@ -1,43 +1,74 @@
-import { GET, POST, PATCH, DELETE } from "../core/http.js";
+import { GET, POST, PATCH, DELETE, toQueryString } from "../core/http.js";
 
 export const PostsAPI = {
-  getAll(page = 0, limit = 20, sort = "LATEST") {
-    return GET(`/api/posts?page=${page}&limit=${limit}&sort=${sort}`);
+  getList({ page = 0, limit = 10, sort = "DATE" } = {}) {
+    const qs = toQueryString({ page, limit, sort });
+    return GET(`/api/v1/posts?${qs}`);
   },
 
-  create(data) {
-    return POST("/api/posts", data);
+  getDetail(postId, { viewerId } = {}) {
+    const qs = toQueryString({ viewerId });
+    const suffix = qs ? `?${qs}` : "";
+    return GET(`/api/v1/posts/${postId}${suffix}`);
   },
 
-  getOne(id) {
-    return GET(`/api/posts/${id}`);
+  create({ userId, title, content, imageUrl }) {
+    const qs = toQueryString({ userId });
+    return POST(`/api/v1/posts?${qs}`, {
+      title,
+      content,
+      image_url: imageUrl ?? null,
+    });
   },
 
-  update(id, data) {
-    return PATCH(`/api/posts/${id}`, data);
+  update(postId, { userId, title, content, imageUrl }) {
+    const qs = toQueryString({ userId });
+    return PATCH(`/api/v1/posts/${postId}?${qs}`, {
+      title,
+      content,
+      image_url: imageUrl ?? null,
+    });
   },
 
-  remove(id) {
-    return DELETE(`/api/posts/${id}`);
+  remove(postId, { userId }) {
+    const qs = toQueryString({ userId });
+    return DELETE(`/api/v1/posts/${postId}?${qs}`);
   },
 
-  like(id) {
-    return POST(`/api/posts/${id}/likes`);
+  like(postId, { userId }) {
+    const qs = toQueryString({ userId });
+
+    return POST(`/api/v1/posts/${postId}/like?${qs}`, {});
   },
 
-  unlike(id) {
-    return DELETE(`/api/posts/${id}/likes`);
+  unlike(postId, { userId }) {
+    const qs = toQueryString({ userId });
+    return DELETE(`/api/v1/posts/${postId}/like?${qs}`);
   },
 
-  createComment(postId, data) {
-    return POST(`/api/posts/${postId}/comments`, data);
+  search({
+    keyword,
+    authorId,
+    minLikes,
+    minViews,
+    page = 0,
+    limit = 10,
+    sort = "DATE",
+  } = {}) {
+    const qs = toQueryString({
+      keyword,
+      authorId,
+      minLikes,
+      minViews,
+      page,
+      limit,
+      sort,
+    });
+    return GET(`/api/querydsl/posts?${qs}`);
   },
 
-  updateComment(commentId, data) {
-    return PATCH(`/api/comments/${commentId}`, data);
-  },
-
-  deleteComment(commentId) {
-    return DELETE(`/api/comments/${commentId}`);
+  resetViews({ threshold = 1000 } = {}) {
+    const qs = toQueryString({ threshold });
+    return POST(`/api/querydsl/posts/views/reset?${qs}`, {});
   },
 };

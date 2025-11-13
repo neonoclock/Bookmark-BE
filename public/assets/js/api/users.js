@@ -1,17 +1,18 @@
-import { GET, PATCH, POST } from "../core/http.js";
+import { GET, PATCH, DELETE } from "../core/http.js";
 
 export const UsersAPI = {
-  getMe() {
-    return GET("/api/v1/users/me");
+  getUser(userId) {
+    return GET(`/api/v1/users/${userId}`);
   },
 
-  updateProfile(data) {
-    return PATCH("/api/v1/users/me", data);
+  updateProfile(userId, { nickname, profileImage }) {
+    return PATCH(`/api/v1/users/${userId}/profile`, {
+      nickname,
+      profileImage: profileImage ?? null,
+    });
   },
 
-  uploadAvatar(file) {
-    const form = new FormData();
-    form.append("file", file);
-    return POST("/api/v1/users/me/avatar", form, true);
+  deleteUser(userId) {
+    return DELETE(`/api/v1/users/${userId}`);
   },
 };
