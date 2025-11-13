@@ -1,10 +1,7 @@
-// public/assets/js/pages/board.js
-
 import { $, on } from "../core/dom.js";
 import { loadUserId } from "../core/storage.js";
 import { PostsAPI } from "../api/posts.js";
 
-// 간단한 XSS 방지용 이스케이프 함수
 function escapeHtml(str = "") {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -14,18 +11,9 @@ function escapeHtml(str = "") {
     .replace(/'/g, "&#39;");
 }
 
-// PostSummaryResponse → 카드 DOM 생성
 function createPostElement(post) {
-  const {
-    id,
-    title,
-    authorNickname,
-    likes,
-    views,
-    createdAt,
-    // 백엔드에서 아직 안 주면 undefined라 0으로 처리
-    commentsCount,
-  } = post;
+  const { id, title, authorNickname, likes, views, createdAt, commentsCount } =
+    post;
 
   const article = document.createElement("article");
   article.className = "post";
@@ -54,24 +42,19 @@ function createPostElement(post) {
   return article;
 }
 
-// 게시글 목록 불러와서 렌더링
 async function loadPosts() {
   const boardEl = $(".board");
   if (!boardEl) return;
 
-  // 기존 더미 카드들 제거
   boardEl.innerHTML = "";
 
   try {
-    // page=0, limit=10, sort=DATE
     const pageData = await PostsAPI.getList({
       page: 0,
       limit: 10,
       sort: "DATE",
     });
 
-    // PagedResponse<PostSummaryResponse> 를 받는다고 가정
-    // 보통 구조: { content: [...], page, limit, totalPages, totalElements, ... }
     const list = pageData?.content ?? pageData ?? [];
 
     if (!Array.isArray(list) || list.length === 0) {
@@ -101,10 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const avatarBtn = $(".site-header .avatar");
   const boardEl = $(".board");
 
-  // ✅ 페이지 진입 시 게시글 목록 로드
   loadPosts();
 
-  // ✅ "게시글 작성" 버튼 클릭 → 로그인 여부 체크 후 이동
   if (writeBtn) {
     on(writeBtn, "click", () => {
       const userId = loadUserId();
@@ -117,21 +98,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ 아바타 클릭 → 로그인 여부에 따라 분기
   if (avatarBtn) {
     on(avatarBtn, "click", () => {
       const userId = loadUserId();
       if (!userId) {
-        // 로그인 안 되어 있으면 로그인 페이지로
         window.location.href = "./login.html";
       } else {
-        // 로그인 되어 있으면 프로필 수정으로
         window.location.href = "./profile-edit.html";
       }
     });
   }
 
-  // ✅ 게시글 카드 클릭 → 상세 페이지로 이동 (이벤트 위임)
   if (boardEl) {
     on(boardEl, "click", (e) => {
       const postEl = e.target.closest(".post");
