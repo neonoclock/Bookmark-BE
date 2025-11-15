@@ -60,16 +60,6 @@ body {
 }
 
 /* 밑줄 하이라이트 */
-.brand::after {
-  content: "";
-  display: block;
-  margin: 6px auto 0;
-  width: 70%;
-  max-width: 150px;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(210, 107, 130, 0.18);
-}
 
 /* 뒤로가기 버튼 */
 .back {
