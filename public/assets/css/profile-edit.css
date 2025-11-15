@@ -189,6 +189,15 @@ body {
   color: #6b4b4e;
 }
 
+/* ===== 페이지 레이아웃 ===== */
+.layout {
+  min-height: calc(100vh - 58px); /* 헤더 높이 제외한 전체 높이 */
+  display: flex;
+  align-items: center; /* 🔥 세로 가운데 정렬 */
+  justify-content: center; /* 🔥 가로 가운데 정렬 */
+  padding: 40px 16px; /* 화면 양옆 여백 */
+}
+
 .req {
   margin-left: 4px;
   font-weight: 800;
