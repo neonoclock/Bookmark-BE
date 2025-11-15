@@ -1,5 +1,6 @@
 /* public/assets/css/post-create.css */
 
+/* 기본 구조 */
 *,
 *::before,
 *::after {
@@ -11,26 +12,28 @@ body {
 }
 body {
   margin: 0;
-  background: #f2f3f6;
-  color: #111;
+  background: #faefef; /* 책갈피 테마 배경 */
+  color: #2b251d;
   font-family: ui-sans-serif, -apple-system, "Apple SD Gothic Neo", Roboto,
     "Noto Sans KR", Arial, "맑은 고딕", system-ui, sans-serif;
 }
 
+/* 테마 변수 */
 :root {
-  --brand: #111;
-  --border: #e3e5ea;
-  --muted: #6b7280;
-  --error: #e11d48;
-  --primary: #bba7ff;
-  --primary-press: #a896ff;
+  --brand: #5a2e3c;
+  --border: #e6d5d0;
+  --muted: #9b7a7a;
+  --error: #d14747;
+  --primary: #d26b82;
+  --primary-press: #b75a70;
   --w: 760px;
 }
 
 /* ===== 헤더 ===== */
 .site-header {
-  border-bottom: 1px solid #cfd2d9;
+  border-bottom: 1px solid #e8d5d7;
   background: transparent;
+  backdrop-filter: blur(8px);
 }
 .header-inner {
   max-width: 1200px;
@@ -46,6 +49,8 @@ body {
   font-size: 28px;
   font-weight: 800;
   color: var(--brand);
+  font-family: "Nanum Myeongjo", serif;
+  letter-spacing: 0.04em;
 }
 .back {
   position: absolute;
@@ -53,12 +58,12 @@ body {
   top: 50%;
   transform: translateY(-50%);
   text-decoration: none;
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
-  color: #333;
+  color: #8c6b6e;
 }
 
-/* 🔥 아바타 + 드롭다운 */
+/* 아바타 + 드롭다운 (board와 통일) */
 .avatar-wrap {
   position: absolute;
   right: 16px;
@@ -69,24 +74,25 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid #d7dae2;
-  background: #fff;
+  border: 1px solid #e6d0d4;
+  background: radial-gradient(circle at 30% 20%, #ffeef7, #f6dce2);
+  box-shadow: 0 2px 8px rgba(210, 107, 130, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   cursor: pointer;
-  font-size: 20px;
+  font-size: 18px;
+  color: #b0586f;
 }
 .avatar-menu {
   position: absolute;
   right: 0;
   margin-top: 8px;
   min-width: 160px;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  background: #fff9f9;
+  border-radius: 12px;
+  border: 1px solid #f1d9de;
+  box-shadow: 0 12px 28px rgba(148, 27, 73, 0.15);
   padding: 4px 0;
   display: none;
   z-index: 20;
@@ -104,50 +110,77 @@ body {
   border: 0;
   background: transparent;
   cursor: pointer;
-  color: #111;
+  color: #3a2a30;
   text-decoration: none;
 }
 .avatar-menu a:hover,
 .avatar-menu button:hover {
-  background: #f3f4f6;
+  background: #ffeef4;
 }
 
 /* ===== 레이아웃 ===== */
 .layout {
-  max-width: 960px;
-  margin: 32px auto 80px;
-  padding: 0 16px;
-
+  max-width: var(--w);
+  min-height: calc(100vh - 72px); /* 헤더 제외 영역 기준 세로 중앙 */
+  margin: 0 auto;
+  padding: 40px 16px 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* ⬅ 카드 세로 중앙 정렬 */
 }
 .page-title {
-  margin: 8px 0 22px;
+  margin: 10px 0 20px;
   text-align: center;
   font-size: 20px;
   font-weight: 800;
+  color: var(--brand);
 }
 
-/* ===== 폼 ===== */
+/* ===== 글쓰기 영역 (노트 느낌) ===== */
 .write-form {
   width: 100%;
+  padding: 24px 6px 32px; /* ⬅ 아래 패딩 늘림 (10 → 32) */
+  border-radius: 20px;
+  background: rgba(253, 247, 246, 0.9);
+  border: 1px solid rgba(230, 213, 208, 0.8);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
 }
 
+/* 왼쪽 노트 마진 라인 */
+.write-form::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(226, 155, 173, 0.5);
+}
+
+/* 안쪽 내용 정렬 */
+.write-inner {
+  max-width: 100%;
+  padding: 0 18px 4px 40px; /* 왼쪽은 노트 마진 고려 */
+}
+
+/* ===== 필드 ===== */
 .field {
-  margin: 18px 0 28px;
+  margin: 18px 0 26px;
 }
 .label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 13px;
   font-weight: 700;
-  color: #111;
+  color: #6b4b4e;
 }
 .label .req {
   margin-left: 4px;
   font-weight: 800;
-  color: #111;
+  color: #c54f6b;
 }
 .label.inline {
   margin: 0 16px 0 0;
@@ -155,34 +188,37 @@ body {
   vertical-align: middle;
 }
 
+/* 입력 요소 – 언더라인 스타일 */
 input[type="text"],
 textarea {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e7cfd8;
   background: transparent;
   outline: none;
   font-size: 14px;
-  padding: 10px 2px 12px;
+  padding: 8px 2px 10px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  color: #3a2a30;
 }
 textarea {
-  min-height: 140px;
+  min-height: 160px;
   resize: vertical;
+  line-height: 1.7;
 }
 input::placeholder,
 textarea::placeholder {
-  color: #9aa1ac;
+  color: #c5a7b0;
 }
 input:focus,
 textarea:focus {
-  border-bottom-color: #a296ff;
-  box-shadow: 0 2px 0 0 rgba(162, 150, 255, 0.18);
+  border-bottom-color: #e29bad;
+  box-shadow: 0 2px 0 0 rgba(226, 155, 173, 0.45);
 }
 
 /* 헬퍼/에러 */
 .helper {
-  margin: 0 0 10px;
+  margin: 4px 0 0;
   font-size: 12px;
   color: var(--muted);
 }
@@ -194,12 +230,13 @@ textarea:focus {
   margin-right: 4px;
 }
 
-/* 파일 업로드 */
+/* ===== 파일 업로드 ===== */
 .upload {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 22px;
+  margin: 6px 0 22px;
 }
 .file input {
   display: none;
@@ -208,84 +245,105 @@ textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid #cfd2d9;
-  background: #eee;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #e6d5d0;
+  background: #fff5f7;
   font-size: 12px;
   cursor: pointer;
   user-select: none;
+  color: #b0586f;
+  box-shadow: 0 3px 9px rgba(210, 107, 130, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.file-btn:hover {
+  background: #ffeaf1;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(210, 107, 130, 0.26);
 }
 .file-hint {
-  margin-left: 10px;
   font-size: 12px;
-  color: #4b5563;
+  color: #9b7a7a;
 }
 
-/* 제출 버튼 */
+/* ===== 제출 버튼 ===== */
 .actions {
   display: flex;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 22px; /* ⬅ 버튼 위 여백 살짝 증가 (18 → 22) */
 }
 .btn {
   width: 60%;
   max-width: 760px;
-  height: 42px;
+  height: 44px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 999px;
   font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .primary {
   background: var(--primary);
-  color: #fff;
+  color: #fffdfd;
+  box-shadow: 0 10px 24px rgba(210, 107, 130, 0.32);
+}
+.primary:hover {
+  background: #c16379;
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 14px 30px rgba(210, 107, 130, 0.4);
 }
 .primary:active {
   background: var(--primary-press);
+  transform: translateY(0) scale(0.985);
 }
 
-/* 다크모드 */
+/* ===== 다크모드 ===== */
 @media (prefers-color-scheme: dark) {
   body {
-    background: #0f1115;
-    color: #e5e7eb;
+    background: radial-gradient(
+      circle at 0% 0%,
+      #2a2023 0,
+      #1b1716 45%,
+      #171214 100%
+    );
+    color: #f3e9e8;
   }
   .site-header {
-    border-bottom-color: #232633;
+    border-bottom-color: #3a2f31;
   }
-  .avatar {
-    background: #111318;
-    border-color: #2a2f3b;
+  .brand {
+    color: #f7ecec;
   }
-  .avatar-menu {
-    background: #111318;
-    border-color: #2a2f3b;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+
+  .write-form {
+    background: #231d1d;
+    border-color: #4a3b3e;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
   }
-  .avatar-menu a,
-  .avatar-menu button {
-    color: #e5e7eb;
-  }
-  .avatar-menu a:hover,
-  .avatar-menu button:hover {
-    background: #1f2933;
+  .write-form::before {
+    background: rgba(226, 155, 173, 0.6);
   }
 
   input[type="text"],
   textarea {
-    border-bottom-color: #2a2f3b;
-    color: #e5e7eb;
+    border-bottom-color: #4a3b3e;
+    color: #f7ecec;
   }
   input:focus,
   textarea:focus {
-    box-shadow: 0 2px 0 0 rgba(143, 123, 255, 0.22);
-    border-bottom-color: #8f7bff;
+    border-bottom-color: #e29bad;
+    box-shadow: 0 2px 0 0 rgba(226, 155, 173, 0.4);
   }
+
   .file-btn {
-    background: #1b1e24;
-    border-color: #2a2f3b;
-    color: #d1d5db;
+    background: #2a2323;
+    border-color: #4a3b3e;
+    color: #f7ecec;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  }
+  .file-btn:hover {
+    background: #35252a;
   }
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>아무 말 대잔치 - 게시글 작성</title>
+    <title>책갈피 - 게시글 작성</title>
     <link rel="stylesheet" href="./assets/css/post-create.css" />
   </head>
   <body>
@@ -13,9 +13,9 @@
         <a class="back" href="javascript:history.back()" aria-label="뒤로가기"
           >‹</a
         >
-        <h1 class="brand">아무 말 대잔치</h1>
+        <h1 class="brand">책갈피</h1>
 
-        <!-- 🔥 아바타 + 드롭다운 -->
+        <!-- 아바타 + 드롭다운 -->
         <div class="avatar-wrap" id="avatarWrap">
           <button
             class="avatar"
@@ -47,44 +47,52 @@
       <h2 class="page-title">게시글 작성</h2>
 
       <form class="write-form" autocomplete="off">
-        <!-- 제목 -->
-        <div class="field">
-          <label for="title" class="label"
-            >제목<span class="req">*</span></label
-          >
-          <input
-            id="title"
-            type="text"
-            placeholder="제목을 입력해주세요. (최대 26글자)"
-          />
-        </div>
+        <!-- 노트 안쪽 패딩용 래퍼 -->
+        <div class="write-inner">
+          <!-- 제목 -->
+          <div class="field">
+            <label for="title" class="label">
+              제목<span class="req"></span>
+            </label>
+            <input
+              id="title"
+              type="text"
+              placeholder="제목을 입력해주세요. (최대 26글자)"
+            />
+          </div>
 
-        <!-- 내용 -->
-        <div class="field">
-          <label for="content" class="label"
-            >내용<span class="req">*</span></label
-          >
-          <textarea id="content" placeholder="내용을 입력해주세요."></textarea>
-        </div>
+          <!-- 내용 -->
+          <div class="field">
+            <label for="content" class="label">
+              내용<span class="req"></span>
+            </label>
+            <textarea
+              id="content"
+              placeholder="내용을 입력해주세요."
+            ></textarea>
+          </div>
 
-        <!-- 이미지 업로드 -->
-        <p class="helper error"><span class="star">*</span> helper text</p>
+          <!-- 이미지 업로드 헬퍼 -->
+          <p class="helper error"><span class="star"></span> helper text</p>
 
-        <div class="upload">
-          <label class="label inline">이미지</label>
-          <label class="file">
-            <input type="file" accept="image/*" />
-            <span class="file-btn">파일 선택</span>
-            <span class="file-hint">파일을 선택해주세요.</span>
-          </label>
-        </div>
+          <!-- 이미지 업로드 -->
+          <div class="upload">
+            <label class="label inline">이미지</label>
+            <label class="file">
+              <input type="file" accept="image/*" />
+              <span class="file-btn">파일 선택</span>
+              <span class="file-hint">파일을 선택해주세요.</span>
+            </label>
+          </div>
 
-        <!-- 제출 -->
-        <div class="actions">
-          <button class="btn primary" type="submit">완료</button>
+          <!-- 제출 -->
+          <div class="actions">
+            <button class="btn primary" type="submit">완료</button>
+          </div>
         </div>
       </form>
     </main>
+
+    <script type="module" src="./assets/js/pages/post-create.js"></script>
   </body>
 </html>
-<script type="module" src="./assets/js/pages/post-create.js"></script>
