@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="./assets/css/post-edit.css" />
   </head>
   <body>
-    <!-- 헤더 -->
     <header class="site-header">
       <div class="header-inner">
         <a class="back" href="javascript:history.back()" aria-label="뒤로가기"
@@ -17,7 +16,6 @@
           <a href="./board.html">책갈피</a>
         </h1>
 
-        <!-- 🔥 아바타 + 드롭다운 메뉴 (board.html과 동일 구조) -->
         <div class="avatar-wrap" id="avatarWrap">
           <button
             class="avatar"
@@ -44,13 +42,11 @@
       </div>
     </header>
 
-    <!-- 본문 -->
     <main class="layout">
       <h2 class="page-title">게시글 수정</h2>
 
       <form class="edit-form" autocomplete="off">
         <div class="edit-inner">
-          <!-- 제목 -->
           <div class="field">
             <label for="title" class="label">
               제목<span class="req">*</span>
@@ -62,7 +58,6 @@
             />
           </div>
 
-          <!-- 내용 -->
           <div class="field">
             <label for="content" class="label">
               내용<span class="req">*</span>
@@ -75,7 +70,6 @@
 
           <hr class="divider" />
 
-          <!-- 이미지 업로드 -->
           <div class="upload">
             <label class="label inline">이미지</label>
             <label class="file">
@@ -85,7 +79,6 @@
             </label>
           </div>
 
-          <!-- 제출 -->
           <div class="actions">
             <button class="btn primary" type="submit">수정하기</button>
           </div>

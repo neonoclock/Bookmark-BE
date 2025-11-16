@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="./assets/css/post-detail.css" />
   </head>
   <body>
-    <!-- 헤더 -->
     <header class="site-header">
       <div class="header-inner">
         <a class="back" href="javascript:history.back()" aria-label="뒤로가기"
@@ -17,7 +16,6 @@
           <a href="./board.html">책갈피</a>
         </h1>
 
-        <!-- 🔥 아바타 + 드롭다운 메뉴 (board.html과 동일한 구조) -->
         <div class="avatar-wrap" id="avatarWrap">
           <button
             class="avatar"
@@ -44,10 +42,8 @@
       </div>
     </header>
 
-    <!-- 본문 -->
     <main class="page">
       <article class="post">
-        <!-- 제목 + 작성정보 라인 -->
         <h2 class="post-title">제목 1</h2>
 
         <div class="meta-line">
@@ -69,15 +65,12 @@
           </div>
         </div>
 
-        <!-- 이미지 -->
         <div class="media"></div>
 
-        <!-- 본문 텍스트 -->
         <div class="content">
           <p>본문 내용</p>
         </div>
 
-        <!-- 하단 통계 3칸 -->
         <div class="stats">
           <button class="stat">
             <strong>123</strong>
@@ -96,7 +89,6 @@
 
       <hr class="divider" />
 
-      <!-- 댓글 작성 카드 -->
       <section class="comment-write card">
         <textarea placeholder="댓글을 남겨주세요!"></textarea>
         <div class="right">
@@ -104,10 +96,7 @@
         </div>
       </section>
 
-      <!-- 댓글 리스트 -->
-      <section class="comments">
-        <!-- JS에서 렌더링 -->
-      </section>
+      <section class="comments"></section>
     </main>
 
     <script type="module" src="./assets/js/pages/post-detail.js"></script>
