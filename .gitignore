@@ -11,4 +11,7 @@ FE/node_modules/
 # IDE / OS 잡파일
 .idea/
 .vscode/
-.DS_Store
+.DS_Storebuild/
+.idea/
+.gradle/
+
