@@ -15,3 +15,8 @@ FE/node_modules/
 .idea/
 .gradle/
 
+node_modules/
+dist/
+build/
+.DS_Store
+
