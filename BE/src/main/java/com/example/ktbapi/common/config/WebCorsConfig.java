@@ -13,10 +13,11 @@ public class WebCorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:5500",
                         "http://127.0.0.1:5500",
-                        "http://172.16.24.172:5500"
+                        "http://172.16.24.172:5500",
+                        "http://169.254.213.122:5500"
                 )
                 .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false);
+                .allowCredentials(true);
     }
 }

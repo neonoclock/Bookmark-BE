@@ -33,16 +33,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+          
+            .securityContext(sc -> sc.requireExplicitSave(false))
+
+            
             .csrf(csrf -> csrf.disable())
+
+            
             .cors(Customizer.withDefaults())
 
+         
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             )
 
- 
             .authorizeHttpRequests(auth -> auth
-            
+                
                 .requestMatchers(
                     "/",
                     "/swagger-ui/**",
@@ -51,23 +57,24 @@ public class SecurityConfig {
                 ).permitAll()
 
                 
-                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()           
-                .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()    
+                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+
+            
+                .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
 
                
                 .anyRequest().authenticated()
             )
 
-            
+          
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
 
-            
             .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
@@ -75,12 +82,10 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
- 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
-
 }

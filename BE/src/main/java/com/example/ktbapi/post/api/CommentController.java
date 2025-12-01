@@ -34,7 +34,7 @@ public class CommentController {
             @PathVariable Long postId,
             @RequestBody CommentCreateOrUpdateRequest req
     ) {
-        Long userId = principal.getId(); // 로그인 유저
+        Long userId = principal.getId();
         return ApiResponse.success(service.createComment(userId, postId, req));
     }
 

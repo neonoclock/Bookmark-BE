@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://172.16.24.172:5500")
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -44,7 +43,6 @@ public class UserController {
         }
 
         UserRole role = req.userRole != null ? req.userRole : UserRole.USER;
-
 
         String encodedPassword = passwordEncoder.encode(req.password);
 
