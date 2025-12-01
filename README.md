@@ -183,10 +183,3 @@ Vanilla JS 기반의 Frontend 애플리케이션과 REST API로 연동됩니다.
 
 ---
 
-## 🚀 로컬 실행 방법
-
-### **1) 레포지토리 클론**
-
-```bash
-git clone https://github.com/neonoclock/Bookmark-BE.git
-cd Bookmark-BE/BE
