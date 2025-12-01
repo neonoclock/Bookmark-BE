@@ -1,11 +1,13 @@
 package com.example.ktbapi.post.api;
 
 import com.example.ktbapi.common.ApiResponse;
+import com.example.ktbapi.common.auth.UserPrincipal;
 import com.example.ktbapi.common.dto.IdResponse;
 import com.example.ktbapi.post.dto.CommentCreateOrUpdateRequest;
 import com.example.ktbapi.post.dto.CommentResponse;
 import com.example.ktbapi.post.dto.CommentUpdatedResponse;
 import com.example.ktbapi.post.service.CommentService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class CommentController {
         this.service = service;
     }
 
+
     @GetMapping
     public ApiResponse<List<CommentResponse>> getComments(@PathVariable Long postId) {
         return ApiResponse.success(service.getComments(postId));
@@ -27,29 +30,34 @@ public class CommentController {
 
     @PostMapping
     public ApiResponse<IdResponse> createComment(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long postId,
             @RequestBody CommentCreateOrUpdateRequest req
     ) {
+        Long userId = principal.getId(); // 로그인 유저
         return ApiResponse.success(service.createComment(userId, postId, req));
     }
 
+
     @PatchMapping("/{commentId}")
     public ApiResponse<CommentUpdatedResponse> updateComment(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestBody CommentCreateOrUpdateRequest req
     ) {
+        Long userId = principal.getId();
         return ApiResponse.success(service.updateComment(userId, postId, commentId, req));
     }
 
+  
     @DeleteMapping("/{commentId}")
     public ApiResponse<Void> deleteComment(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
+        Long userId = principal.getId();
         service.deleteComment(userId, postId, commentId);
         return ApiResponse.success();
     }

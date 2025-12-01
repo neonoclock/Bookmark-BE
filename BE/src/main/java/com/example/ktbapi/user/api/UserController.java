@@ -2,7 +2,7 @@ package com.example.ktbapi.user.api;
 
 import com.example.ktbapi.common.ApiResponse;
 import com.example.ktbapi.common.dto.IdResponse;
-import com.example.ktbapi.common.exception.UnauthorizedException;
+import com.example.ktbapi.common.auth.UserPrincipal;
 import com.example.ktbapi.user.dto.LoginRequest;
 import com.example.ktbapi.user.dto.SignupRequest;
 import com.example.ktbapi.user.dto.ProfileUpdateRequest;
@@ -11,28 +11,44 @@ import com.example.ktbapi.user.dto.UserResponse;
 import com.example.ktbapi.user.model.User;
 import com.example.ktbapi.user.model.UserRole;
 import com.example.ktbapi.user.repo.UserJpaRepository;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://172.16.24.172:5500")
 @RestController
 @RequestMapping("/api/v1/users")
-@Tag(name = "Users", description = "회원 가입/조회/수정/삭제")
 public class UserController {
 
     private final UserJpaRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
-    public UserController(UserJpaRepository userRepo) {
+    public UserController(UserJpaRepository userRepo,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping
     public ApiResponse<IdResponse> signup(@Valid @RequestBody SignupRequest req) {
 
+        if (userRepo.existsByEmail(req.email)) {
+            throw new IllegalArgumentException("이메일이 이미 존재합니다.");
+        }
+
         UserRole role = req.userRole != null ? req.userRole : UserRole.USER;
 
-        User user = new User(req.email, req.password, req.nickname, role);
+
+        String encodedPassword = passwordEncoder.encode(req.password);
+
+        User user = new User(req.email, encodedPassword, req.nickname, role);
 
         if (req.profileImage != null && !req.profileImage.isBlank()) {
             user.setProfileImage(req.profileImage);
@@ -45,34 +61,38 @@ public class UserController {
     @PostMapping("/login")
     public ApiResponse<UserResponse> login(@Valid @RequestBody LoginRequest req) {
 
-        User user = userRepo.findByEmail(req.email)
-                .orElseThrow(() -> new UnauthorizedException("invalid credentials"));
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(req.email, req.password);
 
-        if (!user.getPassword().equals(req.password)) {
-            throw new UnauthorizedException("invalid credentials");
-        }
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        User user = userRepo.findById(principal.getId()).get();
 
         return ApiResponse.success(UserResponse.from(user));
     }
 
-    @GetMapping("/{userId}")
-    public ApiResponse<UserResponse> getUser(@PathVariable Long userId) {
-        User user = userRepo.findById(userId)
+    @GetMapping("/me")
+    public ApiResponse<UserResponse> getMe(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        
         return ApiResponse.success(UserResponse.from(user));
     }
 
-    @PatchMapping("/{userId}/profile")
+    @PatchMapping("/profile")
     public ApiResponse<Void> updateProfile(
-            @PathVariable Long userId,
-            @Valid @RequestBody ProfileUpdateRequest req) {
-
-        User user = userRepo.findById(userId)
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody ProfileUpdateRequest req
+    ) {
+        User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         user.changeNickname(req.nickname);
+
         if (req.profileImage != null) {
             user.setProfileImage(req.profileImage);
         }
@@ -81,31 +101,32 @@ public class UserController {
         return ApiResponse.success();
     }
 
-    @PatchMapping("/{userId}/password")
+    @PatchMapping("/password")
     public ApiResponse<Void> updatePassword(
-            @PathVariable Long userId,
-            @Valid @RequestBody PasswordUpdateRequest req) {
-
-        User user = userRepo.findById(userId)
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody PasswordUpdateRequest req
+    ) {
+        User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (!user.getPassword().equals(req.oldPassword)) {
-            throw new IllegalArgumentException("Current password incorrect");
+        if (!passwordEncoder.matches(req.oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        user.changePassword(req.newPassword);
+        user.changePassword(passwordEncoder.encode(req.newPassword));
         userRepo.save(user);
 
         return ApiResponse.success();
     }
 
-    @DeleteMapping("/{userId}")
-    public ApiResponse<Void> deleteUser(@PathVariable Long userId) {
-        User user = userRepo.findById(userId)
+    @DeleteMapping
+    public ApiResponse<Void> deleteUser(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         userRepo.delete(user);
-
         return ApiResponse.success();
     }
 }
