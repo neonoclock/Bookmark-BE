@@ -6,6 +6,14 @@ Vanilla JS 기반의 Frontend 애플리케이션과 REST API로 연동됩니다.
 
 ---
 
+## 🎬 데모 영상
+
+프로젝트 동작 화면은 아래 영상을 통해 확인하실 수 있습니다.
+
+[![데모 영상 보러가기](https://img.youtube.com/vi/l-ZnRPHH6_U/0.jpg)](https://youtu.be/l-ZnRPHH6_U)
+
+---
+
 ## ✨ 주요 기능 (Backend)
 
 ### ✅ 1. 사용자 인증 · 인가 (Spring Security)
