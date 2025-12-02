@@ -48,6 +48,7 @@ public class UserController {
 
         User user = new User(req.email, encodedPassword, req.nickname, role);
 
+
         if (req.profileImage != null && !req.profileImage.isBlank()) {
             user.setProfileImage(req.profileImage);
         }
