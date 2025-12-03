@@ -4,12 +4,7 @@ import com.example.ktbapi.common.ApiResponse;
 import com.example.ktbapi.common.auth.JwtTokenProvider;
 import com.example.ktbapi.common.auth.UserPrincipal;
 import com.example.ktbapi.common.dto.IdResponse;
-import com.example.ktbapi.user.dto.LoginRequest;
-import com.example.ktbapi.user.dto.LoginResponse;
-import com.example.ktbapi.user.dto.PasswordUpdateRequest;
-import com.example.ktbapi.user.dto.ProfileUpdateRequest;
-import com.example.ktbapi.user.dto.SignupRequest;
-import com.example.ktbapi.user.dto.UserResponse;
+import com.example.ktbapi.user.dto.*;
 import com.example.ktbapi.user.model.User;
 import com.example.ktbapi.user.model.UserRole;
 import com.example.ktbapi.user.repo.UserJpaRepository;
@@ -17,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,20 +67,15 @@ public class UserController {
 
         var authentication = authenticationManager.authenticate(token);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-     
         String accessToken = jwtTokenProvider.generateAccessToken(
                 user.getId(),
                 user.getEmail()
         );
 
-   
         String refreshToken = null;
 
         LoginResponse res = new LoginResponse(

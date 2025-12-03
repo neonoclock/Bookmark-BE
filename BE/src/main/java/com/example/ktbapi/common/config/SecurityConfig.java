@@ -1,5 +1,7 @@
 package com.example.ktbapi.common.config;
 
+import com.example.ktbapi.common.auth.JwtAuthenticationFilter;
+import com.example.ktbapi.common.auth.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,57 +26,66 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public SecurityConfig(UserDetailsService userDetailsService,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          JwtTokenProvider jwtTokenProvider) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-          
-            .securityContext(sc -> sc.requireExplicitSave(false))
-
-            
-            .csrf(csrf -> csrf.disable())
-
-            
-            .cors(Customizer.withDefaults())
-
-         
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
-
-            .authorizeHttpRequests(auth -> auth
                 
-                .requestMatchers(
-                    "/",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/actuator/health"
-                ).permitAll()
+                .csrf(csrf -> csrf.disable())
 
                 
-                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+                .cors(Customizer.withDefaults())
 
-            
-                .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+             
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                .authorizeHttpRequests(auth -> auth
+                        
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/actuator/health"
+                        ).permitAll()
+
+                       
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+
+                      
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+
+                       
+                        .anyRequest().authenticated()
+                )
+
+                
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
 
                
-                .anyRequest().authenticated()
-            )
+                .authenticationProvider(authenticationProvider())
 
-          
-            .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable())
-
-            .authenticationProvider(authenticationProvider());
+               
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
     }
 
     @Bean
