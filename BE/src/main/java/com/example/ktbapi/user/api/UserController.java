@@ -2,6 +2,8 @@ package com.example.ktbapi.user.api;
 
 import com.example.ktbapi.common.ApiResponse;
 import com.example.ktbapi.common.auth.JwtTokenProvider;
+import com.example.ktbapi.common.auth.RefreshToken;
+import com.example.ktbapi.common.auth.RefreshTokenRepository;
 import com.example.ktbapi.common.auth.UserPrincipal;
 import com.example.ktbapi.common.dto.IdResponse;
 import com.example.ktbapi.user.dto.*;
@@ -14,6 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -23,6 +28,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private static final int ACCESS_TOKEN_EXPIRES_IN = 60 * 60 * 2;
 
@@ -30,12 +36,14 @@ public class UserController {
             UserJpaRepository userRepo,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtTokenProvider jwtTokenProvider
+            JwtTokenProvider jwtTokenProvider,
+            RefreshTokenRepository refreshTokenRepository
     ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @PostMapping
@@ -46,7 +54,6 @@ public class UserController {
         }
 
         UserRole role = req.userRole != null ? req.userRole : UserRole.USER;
-
         String encodedPassword = passwordEncoder.encode(req.password);
 
         User user = new User(req.email, encodedPassword, req.nickname, role);
@@ -59,6 +66,7 @@ public class UserController {
         return ApiResponse.success(new IdResponse(user.getId()));
     }
 
+    @Transactional
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest req) {
 
@@ -75,14 +83,74 @@ public class UserController {
                 user.getId(),
                 user.getEmail()
         );
+        String refreshTokenStr = jwtTokenProvider.generateRefreshToken(
+                user.getId(),
+                user.getEmail()
+        );
 
-        String refreshToken = null;
+        refreshTokenRepository.deleteByUserId(user.getId());
+        RefreshToken refreshToken = RefreshToken.of(
+                user.getId(),
+                refreshTokenStr,
+                LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenValiditySeconds())
+        );
+        refreshTokenRepository.save(refreshToken);
 
         LoginResponse res = new LoginResponse(
                 user.getId(),
                 "Bearer",
                 accessToken,
-                refreshToken,
+                refreshTokenStr,
+                ACCESS_TOKEN_EXPIRES_IN
+        );
+
+        return ApiResponse.success(res);
+    }
+
+
+    @Transactional
+    @PostMapping("/refresh")
+    public ApiResponse<LoginResponse> refresh(@Valid @RequestBody RefreshTokenRequest req) {
+        String refreshTokenStr = req.refreshToken;
+
+        if (!jwtTokenProvider.validateToken(refreshTokenStr)
+                || !jwtTokenProvider.isRefreshToken(refreshTokenStr)) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        Long userIdFromToken = jwtTokenProvider.getUserId(refreshTokenStr);
+
+        RefreshToken stored = refreshTokenRepository.findByToken(refreshTokenStr)
+                .orElseThrow(() -> new IllegalArgumentException("리프레시 토큰이 존재하지 않습니다."));
+
+        if (!stored.getUserId().equals(userIdFromToken) || stored.isExpired()) {
+            throw new IllegalArgumentException("리프레시 토큰이 만료되었거나 유효하지 않습니다.");
+        }
+
+        User user = userRepo.findById(stored.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(
+                user.getId(),
+                user.getEmail()
+        );
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(
+                user.getId(),
+                user.getEmail()
+        );
+
+        stored.updateToken(
+                newRefreshToken,
+                LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenValiditySeconds())
+        );
+        refreshTokenRepository.save(stored);
+
+        LoginResponse res = new LoginResponse(
+                user.getId(),
+                "Bearer",
+                newAccessToken,
+                newRefreshToken,
                 ACCESS_TOKEN_EXPIRES_IN
         );
 
@@ -99,6 +167,7 @@ public class UserController {
         return ApiResponse.success(UserResponse.from(user));
     }
 
+    @Transactional
     @PatchMapping("/profile")
     public ApiResponse<Void> updateProfile(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -117,6 +186,7 @@ public class UserController {
         return ApiResponse.success();
     }
 
+    @Transactional
     @PatchMapping("/password")
     public ApiResponse<Void> updatePassword(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -135,6 +205,7 @@ public class UserController {
         return ApiResponse.success();
     }
 
+    @Transactional
     @DeleteMapping
     public ApiResponse<Void> deleteUser(
             @AuthenticationPrincipal UserPrincipal principal
@@ -142,6 +213,7 @@ public class UserController {
         User user = userRepo.findById(principal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        refreshTokenRepository.deleteByUserId(user.getId());
         userRepo.delete(user);
         return ApiResponse.success();
     }
