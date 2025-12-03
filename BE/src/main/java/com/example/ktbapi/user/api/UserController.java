@@ -1,12 +1,14 @@
 package com.example.ktbapi.user.api;
 
 import com.example.ktbapi.common.ApiResponse;
-import com.example.ktbapi.common.dto.IdResponse;
+import com.example.ktbapi.common.auth.JwtTokenProvider;
 import com.example.ktbapi.common.auth.UserPrincipal;
+import com.example.ktbapi.common.dto.IdResponse;
 import com.example.ktbapi.user.dto.LoginRequest;
-import com.example.ktbapi.user.dto.SignupRequest;
-import com.example.ktbapi.user.dto.ProfileUpdateRequest;
+import com.example.ktbapi.user.dto.LoginResponse;
 import com.example.ktbapi.user.dto.PasswordUpdateRequest;
+import com.example.ktbapi.user.dto.ProfileUpdateRequest;
+import com.example.ktbapi.user.dto.SignupRequest;
 import com.example.ktbapi.user.dto.UserResponse;
 import com.example.ktbapi.user.model.User;
 import com.example.ktbapi.user.model.UserRole;
@@ -26,13 +28,20 @@ public class UserController {
     private final UserJpaRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserController(UserJpaRepository userRepo,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager) {
+    private static final int ACCESS_TOKEN_EXPIRES_IN = 60 * 60 * 2;
+
+    public UserController(
+            UserJpaRepository userRepo,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtTokenProvider jwtTokenProvider
+    ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping
@@ -48,7 +57,6 @@ public class UserController {
 
         User user = new User(req.email, encodedPassword, req.nickname, role);
 
-
         if (req.profileImage != null && !req.profileImage.isBlank()) {
             user.setProfileImage(req.profileImage);
         }
@@ -58,18 +66,38 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<UserResponse> login(@Valid @RequestBody LoginRequest req) {
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest req) {
 
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(req.email, req.password);
 
         var authentication = authenticationManager.authenticate(token);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        User user = userRepo.findById(principal.getId()).get();
 
-        return ApiResponse.success(UserResponse.from(user));
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        User user = userRepo.findById(principal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+     
+        String accessToken = jwtTokenProvider.generateAccessToken(
+                user.getId(),
+                user.getEmail()
+        );
+
+   
+        String refreshToken = null;
+
+        LoginResponse res = new LoginResponse(
+                user.getId(),
+                "Bearer",
+                accessToken,
+                refreshToken,
+                ACCESS_TOKEN_EXPIRES_IN
+        );
+
+        return ApiResponse.success(res);
     }
 
     @GetMapping("/me")

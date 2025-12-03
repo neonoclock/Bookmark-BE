@@ -1,0 +1,2 @@
+jwt:
+  secret: "TestSecretKeyForJwtTokenExample1234567890"

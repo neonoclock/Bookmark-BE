@@ -19,7 +19,13 @@ public class LoginResponse {
     @JsonProperty("expires_in")
     public final int expiresIn;
 
-    public LoginResponse(Long userId, String tokenType, String accessToken, String refreshToken, int expiresIn) {
+    public LoginResponse(
+            Long userId,
+            String tokenType,
+            String accessToken,
+            String refreshToken,
+            int expiresIn
+    ) {
         this.userId = userId;
         this.tokenType = tokenType;
         this.accessToken = accessToken;
