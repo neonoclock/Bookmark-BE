@@ -3,6 +3,7 @@ package com.example.ktbapi.post.model;
 import com.example.ktbapi.common.model.BaseTimeEntity;
 import com.example.ktbapi.user.model.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Formula;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,9 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private int likes = 0;
 
+    @Formula("(select count(*) from comments c where c.post_id = post_id)")
+    private int commentCount;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
@@ -100,6 +104,7 @@ public class Post extends BaseTimeEntity {
     public String getImageUrl() { return imageUrl; }
     public int getViews() { return views; }
     public int getLikes() { return likes; }
+    public int getCommentCount() { return commentCount; }
     public List<Comment> getComments() { return comments; }
     public List<LikeRecord> getLikeRecords() { return likeRecords; }
 }

@@ -28,11 +28,12 @@ public final class PostMapper {
                 p.getLikes(),
                 p.getViews(),
                 fmt(p.getCreatedAt()),
-                p.getAuthor() != null ? p.getAuthor().getProfileImage() : null
+                p.getAuthor() != null ? p.getAuthor().getProfileImage() : null,
+                p.getCommentCount()
         );
     }
 
-    public static PostDetailResponse toDetail(Post p, List<Comment> comments) {
+    public static PostDetailResponse toDetail(Post p, List<Comment> comments, Boolean liked) {
         var commentDtos = comments.stream()
                 .map(c -> new PostDetailResponse.CommentItem(
                         c.getId(),
@@ -48,13 +49,14 @@ public final class PostMapper {
                 p.getTitle(),
                 p.getAuthor() != null ? p.getAuthor().getId() : null,
                 p.getAuthor() != null ? p.getAuthor().getNickname() : null,
-                p.getAuthor() != null ? p.getAuthor().getProfileImage() : null, 
+                p.getAuthor() != null ? p.getAuthor().getProfileImage() : null,
                 p.getContent(),
                 p.getImageUrl(),
                 p.getLikes(),
                 p.getViews(),
                 fmt(p.getCreatedAt()),
                 fmt(p.getUpdatedAt()),
+                liked,
                 commentDtos
         );
     }

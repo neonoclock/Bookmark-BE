@@ -10,5 +10,6 @@ public record PostSummaryResponse(
         int likes,
         int views,
         @JsonProperty("created_at") String createdAt,
-        @JsonProperty("author_profile_image") String authorProfileImage
+        @JsonProperty("author_profile_image") String authorProfileImage,
+        @JsonProperty("comment_count") int commentsCount
 ) {}

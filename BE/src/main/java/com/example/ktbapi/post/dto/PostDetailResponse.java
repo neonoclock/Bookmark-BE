@@ -15,6 +15,7 @@ public record PostDetailResponse(
         int views,
         @JsonProperty("created_at") String createdAt,
         @JsonProperty("updated_at") String updatedAt,
+        Boolean liked,
         List<CommentItem> comments
 ) {
     public record CommentItem(

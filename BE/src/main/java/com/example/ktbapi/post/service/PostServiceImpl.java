@@ -106,8 +106,12 @@ public class PostServiceImpl implements PostService {
         postRepo.increaseViews(postId);
         em.clear();
 
+        Boolean liked = viewerUserId != null
+                ? likeRepo.existsByUserIdAndPostId(viewerUserId, postId)
+                : null;
+
         var comments = commentRepo.findByPostIdWithAuthorOrderByCreatedAtAsc(postId);
-        return PostMapper.toDetail(post, comments);
+        return PostMapper.toDetail(post, comments, liked);
     }
 
     @Override
